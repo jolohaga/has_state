@@ -1,0 +1,47 @@
+StateMachine
+================
+
+An informal library implementing various kinds of state machines: finite, event-driven, deterministic, nondeterministic.
+
+States are kept in a states table and stateful models are associated to the State model polymorphically.  The states table includes columns for the state of the associated model (state) and the datetime when the state occurred (recorded_at).
+
+Example
+=======
+
+Get the plugin.  Downloads to vendor/plugins/has_state
+
+  <instructions go here>
+
+
+Run the generator.  Produces app/models/state.rb and db/migrate/<serialnumber>_create_state.rb
+
+  project dir> ./scripts/generator has_state
+
+
+Run the migration.  Creates state table.
+
+  project dir> rake db:migrate
+
+
+In the model intended to be stateful add the various commands.  Example:
+
+class Title < ActiveRecord::Base
+  # Add the polymorphic association to the State model.
+  has_state
+  
+  # Define the initial state.  This is the state entered when a new Title is saved.
+  state :submitted, :initial => true
+  
+  # Define the method Title#submit! which will record the submitted state in the State table.
+  event :submit, :to => :submitted, :from => []
+  
+  # Define the method Title#adopt! which will record the adopted state in the State table.
+  event :adopt, :to => :adopted, :from => [:submitted]
+  
+  # Define the method Title#accept! which will record the accepted state in the State table.
+  event :accept, :to => :accepted, :from => [:adopted]
+end
+
+
+
+Copyright (c) 2009 Jose Hales-Garcia, released under the MIT license
