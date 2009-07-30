@@ -7,7 +7,7 @@ module StateMachine
     base.send(:include, StateMachine::EventDrivenNonDeterministic)
   end
   
-  # A couple of utilities for converting between names and symbols.  Assume
+  # A couple of utilities for converting between names and symbols.  Assumes
   # names are human friendly titleized strings and symbols are snakecased.
   def name_to_symbol(name)
     name.downcase.gsub(/ /, "_").to_sym
@@ -27,6 +27,7 @@ module StateMachine
       # SomeStatefulModel.has_state
       #
       # Added to some_stateful_model.rb will create a has_many association with the State model.
+      #
       def has_state
         unless included_modules.include? InstanceMethods
           extend ClassMethods

@@ -10,7 +10,7 @@ Example
 
 Get the plugin.  Downloads to vendor/plugins/has_state
 
-  <instructions go here>
+  project dir> ./script/plugin install git://github.com/jolo/has_state.git
 
 
 Run the generator.  Produces app/models/state.rb and db/migrate/<serialnumber>_create_state.rb
