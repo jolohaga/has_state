@@ -124,14 +124,14 @@ module StateMachine
       
       def current_state=(transition_to)
         if !next_states.nil? && next_states.include?(transition_to)
-          self.states << State.new(:state => "#{symbol_to_name(transition_to)}", :recorded_at => Time.now)
+          self.states << State.new(:name => "#{symbol_to_name(transition_to)}", :recorded_at => Time.now)
         else
-          raise UndefinedTransition.new(true), "Transition from #{name_to_symbol(self.current_state.state)} to #{transition_to} is undefined.  Either the current state is terminal or you need to define this transition in the model class file #{self.class}.rb."
+          raise UndefinedTransition.new(true), "Transition from #{name_to_symbol(self.current_state.name)} to #{transition_to} is undefined.  Either the current state is terminal or you need to define this transition in the model class file #{self.class}.rb."
         end
       end
       
       def next_states
-        self.class.transitions[name_to_symbol(self.current_state.state)]
+        self.class.transitions[name_to_symbol(self.current_state.name)]
       end
     end
   end
