@@ -1,4 +1,4 @@
-StateMachine
+has_state
 ================
 
 An informal library implementing various kinds of state machines: finite, event-driven, deterministic, nondeterministic.
