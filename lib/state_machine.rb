@@ -87,7 +87,7 @@ module StateMachine
       def event(action, transitions, &block)
         transitions(:to => transitions[:to], :from => transitions[:from])
         states(transitions[:to],*transitions[:from])
-        define_method("#{action.to_s}!") {
+        define_method("#{action.to_s}") {
           self.current_state = transitions[:to]
         }
       end
