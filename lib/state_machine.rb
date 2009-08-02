@@ -90,6 +90,14 @@ module StateMachine
         define_method("#{action.to_s}") {
           self.current_state = transitions[:to]
         }
+        
+        # Also a class method, 'accepted' will be created, returning all records currently in the accepted state.
+        #
+        self.instance_eval <<-EOC
+          def #{transitions[:to]}
+            self.find(:all).collect {|t| t.current_state}.select {|t| t.name == "#{transitions[:to].to_s.titleize}"}
+          end
+        EOC
       end
       
       # SomeStatefulModel.transitions or SomeStatefulModel.transitions(:to => :some_state, :from => [from state list])
