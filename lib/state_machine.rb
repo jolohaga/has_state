@@ -91,11 +91,11 @@ module StateMachine
           self.current_state = transitions[:to]
         }
         
-        # Also a class method, 'accepted' will be created, returning all records currently in the accepted state.
+        # Also SomeStatefulModel.accepted is created, returning all records currently in the accepted state.
         #
         self.instance_eval <<-EOC
           def #{transitions[:to]}
-            self.find(:all).collect {|t| t.current_state}.select {|t| t.name == "#{transitions[:to].to_s.titleize}"}
+            self.find(:all, :include => :states).collect {|t| t.current_state}.select {|t| t.name == "#{transitions[:to].to_s.titleize}"}
           end
         EOC
       end
