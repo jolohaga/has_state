@@ -95,7 +95,7 @@ module StateMachine
         #
         self.instance_eval <<-EOC
           def #{transitions[:to]}
-            self.find(:all, :include => :states).collect {|t| t.current_state}.select {|t| t.name == "#{transitions[:to].to_s.titleize}"}
+            self.find(:all, :include => :states).collect {|t| t.current_state}.select {|t| t.name == "#{transitions[:to].to_s.titleize}"}.collect {|s| s.stateful_entity}
           end
         EOC
       end
