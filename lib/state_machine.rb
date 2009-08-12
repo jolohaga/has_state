@@ -36,6 +36,7 @@ module StateMachine
         write_inheritable_attribute :states, []
         write_inheritable_attribute :transitions, {}
         write_inheritable_attribute :initial_state, []
+        write_inheritable_attribute :precedences, {}
         
         class_inheritable_reader :initial_state
         
@@ -114,6 +115,23 @@ module StateMachine
           read_inheritable_attribute(:transitions)[from] << options[:to]
         end
       end
+      
+      # SomeStatefulModel.precedences or SomeStatefulModel.precedences(:state1, state2, ...)
+      #
+      # Precedences are used to order states and are stored in the State#precedence attribute.
+      #
+      # When invoked without arguments, returns the precedences.
+      #
+      # When invoked with arguments, takes that argument as a list of precedences.
+      #
+      def precedences(*precedences)
+        return read_inheritable_attribute(:precedences) if precedences.empty?
+        i = -1
+        precedences.each do |precedence|
+          read_inheritable_attribute(:precedences)[precedence] = (i += 1)
+        end
+      end
+      
     end
 
     module InstanceMethods
