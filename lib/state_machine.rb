@@ -96,7 +96,15 @@ module StateMachine
         #
         self.instance_eval <<-EOC
           def #{transitions[:to]}
-            self.find(:all, :include => :states).collect {|t| t.current_state}.select {|t| t.name == "#{transitions[:to].to_s.titleize}"}.collect {|s| s.stateful_entity}
+            State.find_by_sql(
+             "SELECT *
+              FROM states
+              WHERE id IN
+              (SELECT DISTINCT ON (stateful_entity_id) id
+                FROM states
+                WHERE stateful_entity_type = 'Title'
+                ORDER BY stateful_entity_id DESC, precedence DESC)
+                AND precedence = #{precedences[transitions[:to]]}")
           end
         EOC
       end
@@ -136,7 +144,7 @@ module StateMachine
 
     module InstanceMethods
       def set_initial_state
-        self.current_state = self.class.initial_state
+        self.current_state = self.class.initial_state[0]
       end
       
       # Intended to carry out a user defined Proc action when initial state is set.
@@ -145,12 +153,16 @@ module StateMachine
       end
       
       def current_state
-        return states.find(:first, :order => 'recorded_at DESC')
+        if self.class.precedences.nil?  # Use recorded_at timestamps to find current state.
+          return states.find(:first, :order => 'recorded_at DESC')
+        else                            # Use precedences defined in stateful model class.
+          return states.find(:first, :order => 'precedence DESC')
+        end
       end
       
       def current_state=(transition_to)
         if self.states.empty? || (!next_states.nil? && next_states.include?(transition_to))
-          self.states << State.new(:name => "#{symbol_to_name(transition_to)}", :recorded_at => Time.now)
+          self.states << State.new(:name => "#{symbol_to_name(transition_to)}", :recorded_at => Time.now, :precedence => self.class.precedences[transition_to])
         else
           raise UndefinedTransition.new(true), "Transition from #{name_to_symbol(self.current_state.name)} to #{transition_to} is undefined.  Either the current state is terminal or you need to define this transition in the model class file #{self.class}.rb."
         end
