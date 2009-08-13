@@ -96,19 +96,22 @@ module StateMachine
         #
         self.instance_eval <<-EOC
           def #{transitions[:to]}
-            State.find_by_sql(
+            Title.find_by_sql(
              "SELECT *
-              FROM states
-              WHERE id IN
-              (SELECT DISTINCT ON (stateful_entity_id) id
-                FROM states
-                WHERE stateful_entity_type = 'Title'
-                ORDER BY stateful_entity_id DESC, precedence DESC)
-                AND precedence = #{precedences[transitions[:to]]}")
+               FROM titles
+               WHERE id IN
+                 (SELECT stateful_entity_id
+                  FROM states
+                  WHERE states.id IN
+                  (SELECT DISTINCT ON (stateful_entity_id) id
+                   FROM states
+                   WHERE stateful_entity_type = 'Title'
+                   ORDER BY stateful_entity_id DESC, precedence DESC)
+                   AND precedence = #{precedences[transitions[:to]]})")
           end
         EOC
       end
-      
+        
       # SomeStatefulModel.transitions or SomeStatefulModel.transitions(:to => :some_state, :from => [from state list])
       #
       # When invoked without arguments, returns the transitions that have been defined through
