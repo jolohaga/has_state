@@ -96,9 +96,9 @@ module StateMachine
         #
         self.instance_eval <<-EOC
           def #{transitions[:to]}
-            Title.find_by_sql(
+            #{self.to_s}.find_by_sql(
              "SELECT *
-               FROM titles
+               FROM #{self.to_s.tableize}
                WHERE id IN
                  (SELECT stateful_entity_id
                   FROM states
