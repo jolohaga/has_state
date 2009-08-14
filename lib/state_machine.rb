@@ -105,7 +105,7 @@ module StateMachine
                   WHERE states.id IN
                   (SELECT DISTINCT ON (stateful_entity_id) id
                    FROM states
-                   WHERE stateful_entity_type = 'Title'
+                   WHERE stateful_entity_type = '#{self.to_s}'
                    ORDER BY stateful_entity_id DESC, precedence DESC)
                    AND precedence = #{precedences[transitions[:to]]})")
           end
