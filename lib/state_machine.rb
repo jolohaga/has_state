@@ -95,19 +95,21 @@ module StateMachine
         # Also SomeStatefulModel.accepted is created, returning all records currently in the accepted state.
         #
         self.instance_eval <<-EOC
-          def #{transitions[:to]}
+          def #{transitions[:to]}(options = {})
+            order = options[:order].nil? ? "" : "ORDER BY " + options[:order]
             #{self.to_s}.find_by_sql(
              "SELECT *
                FROM #{self.to_s.tableize}
                WHERE id IN
                  (SELECT stateful_entity_id
-                  FROM states
-                  WHERE states.id IN
-                  (SELECT DISTINCT ON (stateful_entity_id) id
                    FROM states
-                   WHERE stateful_entity_type = '#{self.to_s}'
-                   ORDER BY stateful_entity_id DESC, precedence DESC)
-                   AND precedence = #{precedences[transitions[:to]]})")
+                   WHERE states.id IN
+                   (SELECT DISTINCT ON (stateful_entity_id) id
+                     FROM states
+                     WHERE stateful_entity_type = '#{self.to_s}'
+                     ORDER BY stateful_entity_id DESC, precedence DESC)
+                     AND precedence = #{precedences[transitions[:to]]})
+              \#{order}")
           end
         EOC
       end
