@@ -80,7 +80,7 @@ module StateMachine
       #
       # In some_stateful_model.rb (made stateful by including the line 'has_state') add:
       #
-      #  event :accept, :to => :accepted, :from => [:submitted]
+      #  event :accept!, :to => :accepted, :from => [:submitted]
       #   # transitions (:to, :from) are required
       #
       # This will create the instance method SomeStatefulModel#accept!
@@ -90,6 +90,12 @@ module StateMachine
         states(transitions[:to],*transitions[:from])
         define_method("#{action.to_s}") {
           self.current_state = transitions[:to]
+        }
+        
+        # SomeStatefulModel#accepted? is created, returning true if the current state matches the method's name (in this case accepted?), false otherwise.
+        #
+        define_method("#{transitions[:to].to_s}?") {
+          self.current_state.name == symbol_to_name(transitions[:to])
         }
         
         # Also SomeStatefulModel.accepted is created, returning all records currently in the accepted state.
@@ -113,7 +119,7 @@ module StateMachine
           end
         EOC
       end
-        
+      
       # SomeStatefulModel.transitions or SomeStatefulModel.transitions(:to => :some_state, :from => [from state list])
       #
       # When invoked without arguments, returns the transitions that have been defined through
