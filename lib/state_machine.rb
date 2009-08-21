@@ -92,7 +92,7 @@ module StateMachine
           self.current_state = transitions[:to]
         }
         
-        # SomeStatefulModel#accepted? is created, returning true if the current state matches the method's name (in this case accepted?), false otherwise.
+        # SomeStatefulModel#accepted? is created, returning true if the model's current state matches the method's name (in this case accepted?), false otherwise.
         #
         define_method("#{transitions[:to].to_s}?") {
           self.current_state.name == symbol_to_name(transitions[:to])
@@ -151,6 +151,9 @@ module StateMachine
         end
       end
       
+      def terminal_states
+        transitions.values.flatten.collect {|k| (transitions[k] == nil) && k}.uniq.reject {|k| k == false}
+      end
     end
 
     module InstanceMethods
@@ -181,6 +184,10 @@ module StateMachine
       
       def next_states
         self.class.transitions[name_to_symbol(self.current_state.name)]
+      end
+      
+      def terminal?
+        self.class.terminal_states.include?(name_to_symbol(self.current_state.name))
       end
     end
   end
