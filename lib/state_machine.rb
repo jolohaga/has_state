@@ -201,6 +201,10 @@ module StateMachine
       def terminal?
         self.class.terminal_states.include?(name_to_symbol(self.current_state.name))
       end
+      
+      def protected?
+        self.class.protected_states.include?(name_to_symbol(self.current_state.name))
+      end
     end
   end
 end
