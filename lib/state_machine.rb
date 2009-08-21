@@ -34,6 +34,7 @@ module StateMachine
           include InstanceMethods
         end
         write_inheritable_attribute :states, []
+        write_inheritable_attribute :protected_states, []
         write_inheritable_attribute :transitions, {}
         write_inheritable_attribute :initial_state, []
         write_inheritable_attribute :precedences, {}
@@ -148,6 +149,17 @@ module StateMachine
         i = -1
         precedences.each do |precedence|
           read_inheritable_attribute(:precedences)[precedence] = (i += 1)
+        end
+      end
+      
+      # SomeStatefulModel.protected_states or SomeStatefulModel.protected_states(:state1, state2, ...)
+      #
+      # Return or define a set of states.  Defined in order to protect a StatefulModel from destructive actions while in the protected state.
+      #
+      def protected_states(*states)
+        return read_inheritable_attribute(:protected_states) if states.empty?
+        states.each do |state|
+          read_inheritable_attribute(:protected_states) << state
         end
       end
       
