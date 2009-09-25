@@ -7,14 +7,16 @@ module StateMachine
     base.send(:include, StateMachine::EventDrivenNonDeterministic)
   end
   
-  # A couple of utilities for converting between names and symbols.  Assumes
-  # names are human friendly titleized strings and symbols are snakecased.
-  def name_to_symbol(name)
-    name.downcase.gsub(/ /, "_").to_sym
-  end
-  
-  def symbol_to_name(symbol)
-    symbol.to_s.titleize
+  class << self
+    # A couple of utilities for converting between names and symbols.  Assumes
+    # names are human friendly titleized strings and symbols are snakecased.
+    def name_to_symbol(name)
+      name.downcase.gsub(/ /, "_").to_sym
+    end
+    
+    def symbol_to_name(symbol)
+      symbol.to_s.titleize
+    end
   end
   
   module EventDrivenNonDeterministic
@@ -89,14 +91,15 @@ module StateMachine
       def event(action, transitions, &block)
         transitions(:to => transitions[:to], :from => transitions[:from])
         states(transitions[:to],*transitions[:from])
-        define_method("#{action.to_s}") {
-          self.current_state = transitions[:to]
+        define_method("#{action.to_s}") { |*options|
+          datetime = options.shift || Time.now
+          self.transition(transitions[:to],datetime)
         }
         
         # SomeStatefulModel#accepted? is created, returning true if the model's current state matches the method's name (in this case accepted?), false otherwise.
         #
         define_method("#{transitions[:to].to_s}?") {
-          self.current_state.name == symbol_to_name(transitions[:to])
+          self.current_state.name == StateMachine.symbol_to_name(transitions[:to])
         }
         
         # Also SomeStatefulModel.accepted is created, returning all records currently in the accepted state.
@@ -170,7 +173,7 @@ module StateMachine
 
     module InstanceMethods
       def set_initial_state
-        self.current_state = self.class.initial_state[0]
+        self.transition = self.class.initial_state[0]
       end
       
       # Intended to carry out a user defined Proc action when initial state is set.
@@ -186,24 +189,42 @@ module StateMachine
         end
       end
       
-      def current_state=(transition_to)
+      def transition(transition_to,datetime=Time.now)
         if self.states.empty? || (!next_states.nil? && next_states.include?(transition_to))
-          self.states << State.new(:name => "#{symbol_to_name(transition_to)}", :recorded_at => Time.now, :precedence => self.class.precedences[transition_to])
+          self.states << State.new(:name => "#{StateMachine.symbol_to_name(transition_to)}", :recorded_at => datetime, :precedence => self.class.precedences[transition_to])
         else
-          raise UndefinedTransition.new(true), "Transition from #{name_to_symbol(self.current_state.name)} to #{transition_to} is undefined.  Either the current state is terminal or you need to define this transition in the model class file #{self.class}.rb."
+          raise UndefinedTransition.new(true), "Transition from #{StateMachine.name_to_symbol(self.current_state.name)} to #{transition_to} is undefined.  Either the current state is terminal or you need to define this transition in the model class file #{self.class}.rb."
         end
       end
-      
+            
       def next_states
-        self.class.transitions[name_to_symbol(self.current_state.name)]
+        self.class.transitions[StateMachine.name_to_symbol(self.current_state.name)]
       end
       
       def terminal?
-        self.class.terminal_states.include?(name_to_symbol(self.current_state.name))
+        self.class.terminal_states.include?(StateMachine.name_to_symbol(self.current_state.name))
       end
       
       def protected?
-        self.class.protected_states.include?(name_to_symbol(self.current_state.name))
+        self.class.protected_states.include?(StateMachine.name_to_symbol(self.current_state.name))
+      end
+    end
+  end
+  
+  module Helpers
+    def select_next_state(next_states, options = {})
+      style = options[:style] || ""
+      unless next_states.nil?
+        return <<-EOC
+          <p>
+            #{content_tag(:label, "State<br/>", :style => style)}
+            #{select('state','name',["Select state..."] + next_states.map {|s| s.to_s.gsub(/_/," ").titleize}.zip(next_states),{},:style => style)}
+          </p>
+          <p>
+            #{content_tag(:label, "Date<br/>", :style => style)}
+            #{datetime_select("state","recorded_at",{},:style => style)}
+          </p>
+        EOC
       end
     end
   end
