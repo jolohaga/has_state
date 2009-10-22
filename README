@@ -34,13 +34,13 @@ class Title < ActiveRecord::Base
   
   # Define the method Title#submit! which will record the submitted state in the State table.
   # Also defined is Title.submitted which finds all Titles in submitted state.
-  event :submit, :to => :submitted, :from => []
+  event :submit!, :to => :submitted, :from => []
   
   # Define the method Title#adopt! which will record the adopted state in the State table.
-  event :adopt, :to => :adopted, :from => [:submitted]
+  event :adopt!, :to => :adopted, :from => [:submitted]
   
   # Define the method Title#accept! which will record the accepted state in the State table.
-  event :accept, :to => :accepted, :from => [:adopted]
+  event :accept!, :to => :accepted, :from => [:adopted]
 end
 
 
