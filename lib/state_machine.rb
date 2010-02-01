@@ -173,7 +173,7 @@ module StateMachine
 
     module InstanceMethods
       def set_initial_state
-        self.transition = self.class.initial_state[0]
+        self.transition(self.class.initial_state[0], Time.now)
       end
       
       # Intended to carry out a user defined Proc action when initial state is set.
