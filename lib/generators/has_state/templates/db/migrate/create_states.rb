@@ -3,7 +3,6 @@ class CreateStates < ActiveRecord::Migration
     create_table :states do |t|
       t.string :name
       t.datetime :recorded_at
-      t.integer :precedence
       t.integer :stateful_entity_id
       t.string :stateful_entity_type
 
@@ -11,7 +10,6 @@ class CreateStates < ActiveRecord::Migration
     end
     add_index :states, :name
     add_index :states, :recorded_at
-    add_index :states, :precedence
     add_index :states, :stateful_entity_id
     add_index :states, :stateful_entity_type
   end
