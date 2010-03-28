@@ -214,8 +214,9 @@ module StateMachine
   module Helpers
     def select_next_state(next_states, options = {})
       style = options[:style] || ""
+      html = ""
       unless next_states.nil?
-        return <<-EOC
+        html =<<-EOC
           <p>
             #{content_tag(:label, "State<br/>", :style => style)}
             #{select('state','name',["Select state..."] + next_states.map {|s| s.to_s.gsub(/_/," ").titleize}.zip(next_states),{},:style => style)}
@@ -226,6 +227,7 @@ module StateMachine
           </p>
         EOC
       end
+      html.html_safe
     end
   end
 end
