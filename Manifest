@@ -1,0 +1,14 @@
+MIT-LICENSE
+Manifest
+README
+Rakefile
+init.rb
+install.rb
+lib/generators/has_state/has_state_generator.rb
+lib/generators/has_state/templates/app/models/state.rb
+lib/generators/has_state/templates/db/migrate/create_states.rb
+lib/state_machine.rb
+spec/has_state_spec.rb
+spec/spec_helper.rb
+tasks/has_state_tasks.rake
+uninstall.rb

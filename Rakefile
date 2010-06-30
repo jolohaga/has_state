@@ -1,23 +1,15 @@
+require 'rubygems'
 require 'rake'
-require 'rake/testtask'
-require 'rake/rdoctask'
+require 'echoe'
 
-desc 'Default: run unit tests.'
-task :default => :test
 
-desc 'Test the has_state plugin.'
-Rake::TestTask.new(:test) do |t|
-  t.libs << 'lib'
-  t.libs << 'test'
-  t.pattern = 'test/**/*_test.rb'
-  t.verbose = true
+Echoe.new('has_state', '6.1.2') do |config|
+  config.summary                  = 'Informal library implementing state machines.'
+  config.author                   = 'Jose Hales-Garcia'
+  config.url                      = 'http://github.com/jolohaga/has_state'
+  config.email                    = 'jolohaga@me.com' 
+  config.ignore_pattern           = ["tmp/*",".hg/*", ".pkg/*", ".git/*"]
+  config.development_dependencies = ['rspec >=1.3.0','echoe >=4.3']
 end
 
-desc 'Generate documentation for the has_state plugin.'
-Rake::RDocTask.new(:rdoc) do |rdoc|
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title    = 'HasState'
-  rdoc.options << '--line-numbers' << '--inline-source'
-  rdoc.rdoc_files.include('README')
-  rdoc.rdoc_files.include('lib/**/*.rb')
-end
+Dir["#{File.dirname(__FILE__)}/tasks/*.rake"].sort.each{|ext| load ext}
