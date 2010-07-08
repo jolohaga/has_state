@@ -1,0 +1,14 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+one:
+  name: MyString
+  recorded_at: Date.today
+  precedence: 1
+  stateful_entity_id: 1
+  stateful_entity_type: MyString
+
+two:
+  name: MyString
+  recorded_at: Date.today
+  precedence: 1
+  stateful_entity_id: 1
+  stateful_entity_type: MyString

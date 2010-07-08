@@ -1,0 +1,10 @@
+HasState Generator
+
+Description:
+
+  Generator for the has_state plugin.  Copies has_state model and migration files to your app.    
+  To complete the installation, follow with rake db:migrations
+
+Usage:
+
+  rails generate has_state

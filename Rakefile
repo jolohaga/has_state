@@ -2,8 +2,7 @@ require 'rubygems'
 require 'rake'
 require 'echoe'
 
-
-Echoe.new('has_state', '6.1.2') do |config|
+Echoe.new('has_state', '7.0.0') do |config|
   config.summary                  = 'Informal library implementing state machines.'
   config.author                   = 'Jose Hales-Garcia'
   config.url                      = 'http://github.com/jolohaga/has_state'

@@ -4,11 +4,16 @@ README
 Rakefile
 init.rb
 install.rb
+lib/USAGE
 lib/generators/has_state/has_state_generator.rb
 lib/generators/has_state/templates/app/models/state.rb
 lib/generators/has_state/templates/db/migrate/create_states.rb
 lib/state_machine.rb
-spec/has_state_spec.rb
+spec/config/database.yml
+spec/db/schema.rb
+spec/fixtures/states.yml
+spec/has_state/has_state_spec.rb
+spec/models/state.rb
 spec/spec_helper.rb
 tasks/has_state_tasks.rake
 uninstall.rb
